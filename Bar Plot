@@ -1,0 +1,14 @@
+import pandas as pd
+dataframe = pd.read_csv('student.csv')
+dftable = pd.pivot_table(dataframe, values='mark', index=['class'], columns=['gender'], aggfunc='mean')
+dftable['both'] = dftable[['female', 'male']].mean(axis=1)
+dftable['performance'] = ['Excellent' if x >= 80 else
+    'Good' if x >= 70 else
+    'Satisfactory' if x >= 60 else
+    'Needs Improvement'
+    for x in dftable['both']]
+dftable = dftable.reindex(dftable['both'].sort_values(ascending=True).index)
+import matplotlib.pyplot as plt
+plt.close('all')
+dftable['both'].plot(kind='bar')
+plt.show()
