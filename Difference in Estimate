@@ -1,0 +1,26 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+plt.close('all')
+df = pd.read_csv("GDP (nominal) per Capita.csv")
+print("The number of rows is: ", len(df))
+print("The number of columns is: ", len(df.columns))
+print("The names of the columns are:", df.columns)
+df=df.replace(0, np.nan)
+print("The number of rows with missing data is:", df.isnull().any(axis=1).sum())
+df['UN_WorldBank_Pct_Dif'] = (df['WorldBank_Estimate'] - df['UN_Estimate']) / df['UN_Estimate'] * 100
+df['UWPD_Scale'] = ['Major' if x >= 100 else
+                    'Major' if x <= -100 else
+                    'Moderate' if x >= 50 else
+                    'Moderate' if x <= -50 else
+                    'Minor'
+                    for x in df['UN_WorldBank_Pct_Dif']]
+filtered_df = df.loc[(df['UWPD_Scale'] == 'Major') | (df['UWPD_Scale'] == 'Moderate')]
+rgn_mean_difference = df.groupby('UN_Region')['UN_WorldBank_Pct_Dif'].mean()
+chart = rgn_mean_difference.plot.bar(rot=0, figsize=(10, 6))
+plt.title('Mean Difference in UN/World Bank Estimate by UN Region')
+plt.ylabel('Mean Difference')
+plt.xlabel('UN Region')
+plt.tight_layout()
+plt.show()
